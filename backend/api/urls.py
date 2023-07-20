@@ -9,7 +9,8 @@ from api.views import (CustomUserViewSet, IngredientViewSet,
 
 router_v1 = routers.DefaultRouter()
 
-router_v1.register(r'ingredients', IngredientViewSet, basename='ingredients')
+router_v1.register(r'ingredients', IngredientViewSet,
+                   basename='ingredients')
 router_v1.register(r'tags', TagViewSet, basename='tags')
 router_v1.register(r'users/subscriptions', ListSubscribeViewSet,
                    basename='get_subscribe')

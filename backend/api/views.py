@@ -229,4 +229,3 @@ def favorite_view(request, recipe_id):
         recipe=get_object_or_404(Recipe, id=recipe_id)
     ).delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
-    
