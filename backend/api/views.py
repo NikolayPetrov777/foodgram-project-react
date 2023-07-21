@@ -187,7 +187,7 @@ def download_shopping_cart(request):
 
 @api_view(['POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
-def add_del_shopping_card(request, recipe_id):
+def add_del_shopping_cart(request, recipe_id):
     """Добавить/удалить подписку."""
 
     if request.method == 'POST':

@@ -82,7 +82,6 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'tags'
     )
-
     def get_queryset(self, request):
         return Recipe.objects.annotate(
             favorite_count=Count(
@@ -92,7 +91,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     @admin.display(
         ordering='favorite_count',
-        description='Количество добавлений в избранное',
+        description='Сколько раз добавили в избранное',
     )
     def favorite_count(self, obj):
         return obj.favorite_count
