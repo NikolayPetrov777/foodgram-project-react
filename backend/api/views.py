@@ -151,9 +151,9 @@ def add_del_subscribe(request, user_id):
     )
     serializer.is_valid(raise_exception=True)
     Follow.objects.filter(
-            user=request.user,
-            author=author
-        ).delete()
+        user=request.user,
+        author=author
+    ).delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
