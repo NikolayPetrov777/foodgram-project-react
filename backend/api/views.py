@@ -1,5 +1,4 @@
 from django.db.models import Exists, OuterRef, Value
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.conf import settings
@@ -17,8 +16,8 @@ from api.serializers import (CustomUserSerializer, FavoriteSerializer,
                              RecipeSerializer, RecipeWriteSerializer,
                              ShoppingCardSerializer, TagSerializer)
 from api.viewsets import ListRetriveViewSet, ListViewSet
-from recipes.models import (Favorite, Follow, Ingredient, IngredientInRecipe,
-                            Recipe, ShoppingList, Tag)
+from recipes.models import (Favorite, Follow, Ingredient, Recipe,
+                            ShoppingList, Tag)
 from users.models import User
 
 
@@ -143,64 +142,35 @@ def add_del_subscribe(request, user_id):
             data=request.data,
             context={'request': request, 'user_id': user_id}
         )
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user, author=author)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response('Ошибка при вводе данных',
-                        status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user, author=author)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     serializer = FollowSerializer(
         data=request.data,
         context={'request': request, 'user_id': user_id}
     )
-    if serializer.is_valid(raise_exception=True):
-        Follow.objects.filter(
+    serializer.is_valid(raise_exception=True)
+    Follow.objects.filter(
             user=request.user,
             author=author
         ).delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def download_shopping_cart(request):
-    """Скачать список покупок."""
-
-    ingredients = IngredientInRecipe.objects.filter(
-        recipe__recipe_to_shopping__user=request.user
-    )
-    shopping_data = {}
-    for ingredient in ingredients:
-        if str(ingredient.ingredient) in shopping_data:
-            shopping_data[f'{str(ingredient.ingredient)}'] += ingredient.amount
-        else:
-            shopping_data[f'{str(ingredient.ingredient)}'] = ingredient.amount
-    filename = 'shopping-list.txt'
-    content = ''
-    for ingredient, amount in shopping_data.items():
-        content += f"{ingredient} - {amount};\n\n"
-    response = HttpResponse(content, content_type='text/plain',
-                            status=status.HTTP_200_OK)
-    response['Content-Disposition'] = 'attachment; filename={0}'.format(
-        filename)
-    return response
-
-
 @api_view(['POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def add_del_shopping_cart(request, recipe_id):
-    """Добавить/удалить подписку."""
+    """Добавить/удалить список покупок."""
 
     if request.method == 'POST':
         serializer = ShoppingCardSerializer(
             data=request.data,
             context={'request': request, 'recipe_id': recipe_id}
         )
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user,
-                            recipe=get_object_or_404(Recipe, id=recipe_id))
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response('Ошибка при вводе данных',
-                        status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user,
+                        recipe=get_object_or_404(Recipe, id=recipe_id))
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     ShoppingList.objects.get(
         user=request.user,
         recipe=get_object_or_404(Recipe, id=recipe_id)
@@ -218,12 +188,10 @@ def favorite_view(request, recipe_id):
             data=request.data,
             context={'request': request, 'recipe_id': recipe_id}
         )
-        if serializer.is_valid(raise_exception=True):
-            recipe = get_object_or_404(Recipe, id=recipe_id)
-            serializer.save(user=request.user, recipe=recipe)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response('Ошибка при вводе данных',
-                        status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        recipe = get_object_or_404(Recipe, id=recipe_id)
+        serializer.save(user=request.user, recipe=recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     Favorite.objects.get(
         user=request.user,
         recipe=get_object_or_404(Recipe, id=recipe_id)

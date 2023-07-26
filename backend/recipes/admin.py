@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Count, OuterRef
 
-from recipes.models import Favorite, Ingredient, Recipe, Tag
+from recipes.models import Favorite, Follow, Ingredient, IngredientInRecipe, Recipe, ShoppingList, Tag
 
 
 class TagsInline(admin.TabularInline):
@@ -16,6 +16,7 @@ class IngredientsInline(admin.TabularInline):
 
     model = Recipe.ingredients.through
     extra = 3
+    min_num = 1
 
 
 @admin.register(Ingredient)
@@ -74,8 +75,10 @@ class RecipeAdmin(admin.ModelAdmin):
         'image',
         'text',
         'cooking_time',
+        'tags',
         'favorite_count'
     )
+    search_fields = ('name', 'author__username', 'tags__name')
     readonly_fields = ('favorite_count',)
     list_filter = (
         'author',
@@ -96,3 +99,33 @@ class RecipeAdmin(admin.ModelAdmin):
     )
     def favorite_count(self, obj):
         return obj.favorite_count
+
+
+@admin.register(Follow)
+class FollowAdmin(admin.ModelAdmin):
+    """Панель администратора для подписок."""
+
+    list_display = (
+        'user',
+        'author'
+    )
+
+@admin.register(IngredientInRecipe)
+class IngredientInRecipeAdmin(admin.ModelAdmin):
+    """Панель администратора для ингредиентов в рецептах."""
+
+    list_display = (
+        'recipe',
+        'ingredient',
+        'amount'
+    )
+
+
+@admin.register(ShoppingList)
+class ShoppingListAdmin(admin.ModelAdmin):
+    """Панель администратора для списка покупок."""
+
+    list_display = (
+        'recipe',
+        'user'
+    )

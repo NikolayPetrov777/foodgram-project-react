@@ -1,21 +1,21 @@
 from django.urls import include, path
 from rest_framework import routers
 
+from api.utils import download_shopping_cart
 from api.views import (CustomUserViewSet, IngredientViewSet,
                        ListSubscribeViewSet, RecipeViewSet,
                        TagViewSet, add_del_shopping_cart,
-                       add_del_subscribe, download_shopping_cart,
-                       favorite_view)
+                       add_del_subscribe, favorite_view)
 
 router_v1 = routers.DefaultRouter()
 
-router_v1.register(r'ingredients', IngredientViewSet,
+router_v1.register('ingredients', IngredientViewSet,
                    basename='ingredients')
-router_v1.register(r'tags', TagViewSet, basename='tags')
-router_v1.register(r'users/subscriptions', ListSubscribeViewSet,
+router_v1.register('tags', TagViewSet, basename='tags')
+router_v1.register('users/subscriptions', ListSubscribeViewSet,
                    basename='get_subscribe')
-router_v1.register(r'users', CustomUserViewSet)
-router_v1.register(r'recipes', RecipeViewSet, basename='recipes')
+router_v1.register('users', CustomUserViewSet)
+router_v1.register('recipes', RecipeViewSet, basename='recipes')
 
 function_urls = [
     path('recipes/download_shopping_cart/', download_shopping_cart,
