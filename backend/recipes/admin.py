@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.db.models import Count, OuterRef
 
-from recipes.models import Favorite, Follow, Ingredient, IngredientInRecipe, Recipe, ShoppingList, Tag
+from recipes.models import (Favorite, Follow, Ingredient, IngredientInRecipe,
+                            Recipe, ShoppingList, Tag)
 
 
 class TagsInline(admin.TabularInline):
@@ -109,6 +110,7 @@ class FollowAdmin(admin.ModelAdmin):
         'user',
         'author'
     )
+
 
 @admin.register(IngredientInRecipe)
 class IngredientInRecipeAdmin(admin.ModelAdmin):

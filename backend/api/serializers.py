@@ -131,21 +131,21 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 def func_validate(self, model):
     if (self.context['request'].method == 'POST'
-                and model.objects.filter(
-                    user=self.context['request'].user,
-                    recipe_id=self.context['recipe_id']
-        ).exists()):
-            raise serializers.ValidationError(
-                'Уже добавлено!'
-            )
+            and model.objects.filter(
+                user=self.context['request'].user,
+                recipe_id=self.context['recipe_id']
+    ).exists()):
+        raise serializers.ValidationError(
+            'Уже добавлено!'
+        )
     if (self.context['request'].method == 'DELETE' and not
         model.objects.filter(
             user=self.context['request'].user,
             recipe_id=self.context['recipe_id']
-        ).exists()):
-            raise serializers.ValidationError(
-                'Этот рецепт не в избранном.'
-            )
+    ).exists()):
+        raise serializers.ValidationError(
+            'Этот рецепт не в избранном.'
+        )
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
