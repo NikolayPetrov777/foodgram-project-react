@@ -14,8 +14,7 @@ from api.permissions import IsAuthor
 from api.serializers import (CustomUserSerializer, FavoriteSerializer,
                              FollowSerializer, IngredientSerializer,
                              RecipeSerializer, RecipeWriteSerializer,
-                             ShoppingCardSerializer, TagSerializer
-                            ) 
+                             ShoppingCardSerializer, TagSerializer)
 from api.viewsets import ListRetriveViewSet, ListViewSet
 from recipes.models import (Favorite, Follow, Ingredient, Recipe,
                             ShoppingList, Tag)
@@ -132,14 +131,14 @@ class CustomUserViewSet(UserViewSet):
 def add_object(request, model_serializer, recipe_id):
     """Метод создания объектов."""
 
-    serializer = model_serializer(
-            data=request.data,
-            context={'request': request, 'recipe_id': recipe_id}
-        ) 
+    serializer = model_serializer(data=request.data,
+                                  context={'request': request,
+                                  'recipe_id': recipe_id})
     serializer.is_valid(raise_exception=True)
     serializer.save(user=request.user,
                     recipe=get_object_or_404(Recipe, id=recipe_id))
     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 def del_object(request, model, recipe_id):
     """Метод удаления объектов."""
@@ -151,13 +150,13 @@ def del_object(request, model, recipe_id):
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['DELETE','POST'])
+@api_view(['DELETE', 'POST'])
 @permission_classes([IsAuthenticated])
 def add_del_subscribe(request, user_id):
     """Добавить/удалить подписку."""
 
     try:
-        author = User.objects.get(id=user_id) 
+        author = User.objects.get(id=user_id)
     except Exception: 
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == 'POST':
