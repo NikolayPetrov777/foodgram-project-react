@@ -18,7 +18,7 @@ class User(AbstractUser):
         max_length=150,
         unique=True,
         validators=[RegexValidator(
-            regex=r'^[\w.@+-]+\z',
+            regex=r'^[\w.@+-]+\Z',
             message='Недопустимый символ в имени'
         )]
     )

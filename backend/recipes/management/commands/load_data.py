@@ -8,7 +8,7 @@ from recipes.models import Ingredient
 
 class Command(BaseCommand):
 
-    help = 'Загрузка ингредиентов'
+    help = 'Импорт ингридиентов'
 
     path = os.path.abspath('data/ingredients.json')
 
@@ -19,9 +19,9 @@ class Command(BaseCommand):
         for note in data:
             try:
                 Ingredient.objects.get_or_create(**note)
-                print(f'{note["name"]} уже загружен')
+                print(f'{note["name"]} записан в базу')
             except Exception as error:
-                print(f'Ошибка при загрузке {note["name"]} в базу.\n'
+                print(f'Ошибка при добавлении {note["name"]} в базу.\n'
                       f'Ошибка: {error}')
 
-        print('Загрузка завершена успешно!')
+        print('Загрузка успешно завершена!')

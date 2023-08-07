@@ -14,7 +14,8 @@ from api.permissions import IsAuthor
 from api.serializers import (CustomUserSerializer, FavoriteSerializer,
                              FollowSerializer, IngredientSerializer,
                              RecipeSerializer, RecipeWriteSerializer,
-                             ShoppingCardSerializer, TagSerializer)
+                             ShoppingCardSerializer, TagSerializer
+                            ) 
 from api.viewsets import ListRetriveViewSet, ListViewSet
 from recipes.models import (Favorite, Follow, Ingredient, Recipe,
                             ShoppingList, Tag)
@@ -128,14 +129,36 @@ class CustomUserViewSet(UserViewSet):
         return self.retrieve(request, *args, **kwargs)
 
 
-@api_view(['POST', 'DELETE'])
+def add_object(request, model_serializer, recipe_id):
+    """Метод создания объектов."""
+
+    serializer = model_serializer(
+            data=request.data,
+            context={'request': request, 'recipe_id': recipe_id}
+        ) 
+    serializer.is_valid(raise_exception=True)
+    serializer.save(user=request.user,
+                    recipe=get_object_or_404(Recipe, id=recipe_id))
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+def del_object(request, model, recipe_id):
+    """Метод удаления объектов."""
+
+    model.objects.get(
+        user=request.user,
+        recipe=get_object_or_404(Recipe, id=recipe_id)
+    ).delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['DELETE','POST'])
 @permission_classes([IsAuthenticated])
 def add_del_subscribe(request, user_id):
     """Добавить/удалить подписку."""
 
     try:
-        author = User.objects.get(id=user_id)
-    except Exception:
+        author = User.objects.get(id=user_id) 
+    except Exception: 
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == 'POST':
         serializer = FollowSerializer(
@@ -163,19 +186,8 @@ def add_del_shopping_cart(request, recipe_id):
     """Добавить/удалить список покупок."""
 
     if request.method == 'POST':
-        serializer = ShoppingCardSerializer(
-            data=request.data,
-            context={'request': request, 'recipe_id': recipe_id}
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user,
-                        recipe=get_object_or_404(Recipe, id=recipe_id))
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    ShoppingList.objects.get(
-        user=request.user,
-        recipe=get_object_or_404(Recipe, id=recipe_id)
-    ).delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+        return add_object(request, ShoppingCardSerializer, recipe_id)
+    return del_object(request, ShoppingList, recipe_id)
 
 
 @api_view(['POST', 'DELETE'])
@@ -184,16 +196,5 @@ def favorite_view(request, recipe_id):
     """Добавить/удалить из избранного."""
 
     if request.method == 'POST':
-        serializer = FavoriteSerializer(
-            data=request.data,
-            context={'request': request, 'recipe_id': recipe_id}
-        )
-        serializer.is_valid(raise_exception=True)
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        serializer.save(user=request.user, recipe=recipe)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    Favorite.objects.get(
-        user=request.user,
-        recipe=get_object_or_404(Recipe, id=recipe_id)
-    ).delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+        return add_object(request, FavoriteSerializer, recipe_id)
+    return del_object(request, Favorite, recipe_id)

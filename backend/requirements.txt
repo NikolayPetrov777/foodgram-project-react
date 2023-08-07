@@ -2,10 +2,11 @@ asgiref==3.6.0
 certifi==2022.12.7
 cffi==1.15.1
 charset-normalizer==3.1.0
-Django==3.2
+Django==3.2.16
+django-cors-headers==3.13.0
 django-filter==23.2
 django-templated-mail==1.1.1
-djangorestframework==3.14.0
+djangorestframework==3.12.4
 djangorestframework-simplejwt==5.2.2
 djoser==2.2.0
 idna==3.4
@@ -14,7 +15,7 @@ isort==5.12.0
 mccabe==0.7.0
 oauthlib==3.2.2
 Pillow==9.5.0
-psycopg2-binary==2.9.6
+psycopg2-binary==2.9.3
 PyJWT==2.7.0
 python-dotenv==1.0.0
 pytz==2023.3
