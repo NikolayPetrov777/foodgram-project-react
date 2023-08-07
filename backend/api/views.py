@@ -131,9 +131,9 @@ class CustomUserViewSet(UserViewSet):
 def add_object(request, model_serializer, recipe_id):
     """Метод создания объектов."""
 
-    serializer = model_serializer(data=request.data,
-                                  context={'request': request,
-                                  'recipe_id': recipe_id})
+    serializer = model_serializer(
+        data=request.data,
+        context={'request': request, 'recipe_id': recipe_id})
     serializer.is_valid(raise_exception=True)
     serializer.save(user=request.user,
                     recipe=get_object_or_404(Recipe, id=recipe_id))
@@ -157,7 +157,7 @@ def add_del_subscribe(request, user_id):
 
     try:
         author = User.objects.get(id=user_id)
-    except Exception: 
+    except Exception:
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == 'POST':
         serializer = FollowSerializer(
