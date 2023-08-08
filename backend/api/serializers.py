@@ -81,6 +81,7 @@ class IngredientInRecipeWriteSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
     )
+    amount = serializers.IntegerField()
 
     class Meta:
         fields = (
@@ -90,6 +91,13 @@ class IngredientInRecipeWriteSerializer(serializers.ModelSerializer):
             'amount'
         )
         model = IngredientInRecipe
+
+    def validate_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError(
+                'Вес должен быть больше нуля.'
+            )
+        return value
 
 
 class CustomUserSerializer(UserSerializer):
@@ -287,6 +295,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         many=True,
         source='ingredientinrecipe_set',
     )
+    cooking_time = serializers.IntegerField()
 
     class Meta:
         exclude = ('pub_date',)
@@ -310,17 +319,15 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Ингредиенты не должны повторяться.'
                 )
-            if int(ingredient['amount']) <= 0:
-                raise serializers.ValidationError(
-                    'Вес должен быть больше нуля.'
-                )
             ingredients.append(ingredient)
-        cooking_time = data.get('cooking_time')
-        if cooking_time <= 0:
+        return data
+
+    def validate_cooking_time(self, value):
+        if value <= 0:
             raise serializers.ValidationError(
                 'Время готовки должно быть больше нуля.'
             )
-        return data
+        return value
 
     def get_is_favorited(self, obj):
         return Favorite.objects.filter(user=self.context['request'].user,

@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['62.84.121.7', '127.0.0.1', 'localhost', 'bossfoodgram.hopto.org']
+ALLOWED_HOSTS = ['62.84.121.7', '127.0.0.1', 'localhost', 'piggygram.hopto.org']
 
 
 INSTALLED_APPS = [
